@@ -1,3 +1,8 @@
+"""Parsing not implemented
+   MAC-Changer tool
+   Works for GNU bash and ZShell"""
+
+
 import subprocess
 import optparse
 
