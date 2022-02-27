@@ -1,28 +1,41 @@
-"""Parsing not implemented
-   MAC-Changer tool
-   Works for GNU bash and ZShell"""
-
-
 import subprocess
+import os
+import json
 import optparse
 
-
-parser = optparse.OptionParser()
-interface =  input("Interface >")
-new_mac = input("New MAC Address >")
-
-print("[+] Changing MAC Address for "+interface+" to "+new_mac)
-
 try:
-    try:
-        subprocess.call("ifconfig")
-        subprocess.call(["ifconfig",interface,"down"])
-        subprocess.call(["ifconfig",interface,"hw",'ether',new_mac])
-        subprocess.call(["ifconfig",interface,"up"])
-    except:
-        print("Not GNU shell")
+    env_typ = os.environ['SHELL']
+    print(env_typ)
+    if str(env_typ).capitalize() == 'ZSH' or 'BASH':
+        try:
+            parser_handler = optparse.OptionParser()
+            parser_handler.add_option("-i", '--interface', dest="interface", help="Target interface for the MAC Address change")
+            parser_handler.parse_args()
+
+
+            subprocess.call(["ifconfig"], shell=True)
+            user_defined_interface = str(input("Interface > "))
+            user_defined_MAC = str(input("New MAC Address > "))
+            print_string = "[+] Changing MAC Address for "+user_defined_interface+" to "+user_defined_MAC+"..."
+            print(print_string)
+            third_call = ["ifconfig ", user_defined_interface," hw ether ", str(user_defined_MAC)]
+            subprocess.call("ifconfig eth0 down", shell=True)
+            subprocess.call(third_call, shell=True)
+            subprocess.call("ifconfig eth0 up", shell=True)
+            subprocess.call("ifconfig", shell=True)
+
+        except:
+            print("Not Bash")        
+
+    else:
+        try:
+            subprocess.call("ipconfig", shell=True)
+        except:
+            print("Not Unix Shell")
+
 except:
-    subprocess.call(["ipconfig",interface,""])
-    #subprocess.call(["",,""])
-    #subprocess.call(["",,""])
-    
+    try:
+        subprocess.call("ipconfig", shell=False)
+    except:
+        print("not Powershell")
+
